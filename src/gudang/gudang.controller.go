@@ -40,12 +40,14 @@ func (c *gudangController) Master(f *fiber.Ctx) error {
 
 	var supp []res
 	for _, item := range *data {
-		key := res{
-			Id:    item.GudangId,
-			Label: item.Nama,
+		if item.Status == true {
+			key := res{
+				Id:    item.GudangId,
+				Label: item.Nama,
+			}
+			supp = append(supp, key)
 		}
 
-		supp = append(supp, key)
 	}
 
 	return handler.ResponseHttp(f, 200, 1, "success", supp)
