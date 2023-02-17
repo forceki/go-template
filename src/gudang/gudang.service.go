@@ -1,9 +1,18 @@
 package gudang
 
+import "github.com/google/uuid"
+
 type gudangRequest struct {
 	Nama   string `json:"nama" validate:"required"`
 	Alamat string `json:"alamat" validate:"required"`
 	Status bool   `json:"status"`
+}
+
+type RackRequest struct {
+	GudangId string `json:"gudang_id"`
+	Details  []struct {
+		RackName string `json:"rack_name`
+	}
 }
 
 type GudangService interface {
@@ -11,6 +20,7 @@ type GudangService interface {
 	Create(Data gudangRequest) error
 	Update(Id string, Data gudangRequest) error
 	Delete(Id string) error
+	CreateRack(Data RackRequest) error
 }
 
 type gudangService struct {
@@ -32,10 +42,12 @@ func (s *gudangService) FindAll() (*[]Gudang, error) {
 }
 
 func (s *gudangService) Create(Data gudangRequest) error {
+	id := uuid.NewString()
 	data := Gudang{
-		Nama:   Data.Nama,
-		Alamat: Data.Alamat,
-		Status: Data.Status,
+		GudangId: id,
+		Nama:     Data.Nama,
+		Alamat:   Data.Alamat,
+		Status:   Data.Status,
 	}
 
 	err := s.gudangRepository.Create(data)
@@ -57,6 +69,24 @@ func (s *gudangService) Update(Id string, Data gudangRequest) error {
 
 func (s *gudangService) Delete(Id string) error {
 	err := s.gudangRepository.Delete(Id)
+
+	return err
+}
+
+func (s *gudangService) CreateRack(Data RackRequest) error {
+	var data []Rack
+
+	for _, item := range Data.Details {
+		ko := Rack{
+			RackId:   uuid.NewString(),
+			RackName: item.RackName,
+			GudangId: Data.GudangId,
+		}
+
+		data = append(data, ko)
+	}
+
+	err := s.gudangRepository.CreateRack(data)
 
 	return err
 }

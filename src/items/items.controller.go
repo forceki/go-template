@@ -36,7 +36,7 @@ func (c *itemsController) Master(f *fiber.Ctx) error {
 	}
 
 	type res struct {
-		Id   int    `json:"id"`
+		Id   string `json:"id"`
 		Nama string `json:"nama"`
 	}
 

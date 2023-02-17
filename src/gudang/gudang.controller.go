@@ -34,7 +34,7 @@ func (c *gudangController) Master(f *fiber.Ctx) error {
 	}
 
 	type res struct {
-		Id    int    `json:"id"`
+		Id    string `json:"id"`
 		Label string `json:"label"`
 	}
 
@@ -107,4 +107,21 @@ func (c *gudangController) Delete(f *fiber.Ctx) error {
 
 	return handler.ResponseHttp(f, 201, 1, "deleted", nil)
 
+}
+
+func (c *gudangController) CreateRack(f *fiber.Ctx) error {
+	var body RackRequest
+	err := f.BodyParser(&body)
+
+	if err != nil {
+		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)
+	}
+
+	err = c.gudangService.CreateRack(body)
+
+	if err != nil {
+		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)
+	}
+
+	return handler.ResponseHttp(f, 201, 1, "create", nil)
 }

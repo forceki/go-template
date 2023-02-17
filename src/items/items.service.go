@@ -1,5 +1,7 @@
 package items
 
+import "github.com/google/uuid"
+
 type ItemsService interface {
 	FindAll(Id string) (*[]ItemsResponse, error)
 	Create(Data ItemsRequest) error
@@ -26,7 +28,9 @@ func (s *itemsService) FindAll(Id string) (*[]ItemsResponse, error) {
 }
 
 func (s *itemsService) Create(Data ItemsRequest) error {
+	id := uuid.NewString()
 	data := Items{
+		ItemId:     id,
 		Nama:       Data.Nama,
 		Barcode:    Data.Barcode,
 		KategoriId: Data.KategoriId,

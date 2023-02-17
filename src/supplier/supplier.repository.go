@@ -3,7 +3,7 @@ package supplier
 import "gorm.io/gorm"
 
 type Supplier struct {
-	ID     int    `json:"id" gorm:"column:id; PRIMARY_KEY"`
+	ID     string `json:"id" gorm:"column:id; PRIMARY_KEY"`
 	Nama   string `json:"nama"`
 	Email  string `json:"email"`
 	Phone  string `json:"phone"`

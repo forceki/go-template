@@ -3,7 +3,7 @@ package items
 import "time"
 
 type Items struct {
-	ItemId     int       `json:"id" gorm:"column:id; PRIMARY_KEY"`
+	ItemId     string    `json:"id" gorm:"column:id; PRIMARY_KEY"`
 	Nama       string    `json:"nama"`
 	Barcode    string    `json:"barcode"`
 	KategoriId int       `json:"kategori_id"`
@@ -24,7 +24,7 @@ type ItemsRequest struct {
 }
 
 type ItemsResponse struct {
-	ItemId       int    `json:"id" gorm:"column:id; PRIMARY_KEY"`
+	ItemId       string `json:"id" gorm:"column:id; PRIMARY_KEY"`
 	Nama         string `json:"nama"`
 	Barcode      string `json:"barcode"`
 	KategoriNama string `json:"kategori_nama"`

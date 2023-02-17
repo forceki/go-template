@@ -5,10 +5,16 @@ import (
 )
 
 type Gudang struct {
-	GudangId int    `json:"id" gorm:"column:id; PRIMARY_KEY"`
+	GudangId string `json:"id" gorm:"column:id; PRIMARY_KEY"`
 	Nama     string `json:"nama"`
 	Alamat   string `json:"alamat"`
 	Status   bool   `json:"status" gorm:"type:boolean:column:status"`
+}
+
+type Rack struct {
+	RackId   string `json:"rack_id"`
+	RackName string `json:"rack_name"`
+	GudangId string `json:"gudang_id"`
 }
 
 type GudangRepository interface {
@@ -16,6 +22,7 @@ type GudangRepository interface {
 	Create(Data Gudang) error
 	Update(Id string, Data Gudang) error
 	Delete(Id string) error
+	CreateRack(Data []Rack) error
 }
 
 type gudangRepository struct {
@@ -51,6 +58,14 @@ func (r *gudangRepository) Update(Id string, Data Gudang) error {
 }
 func (r *gudangRepository) Delete(Id string) error {
 	err := r.db.Exec("DELETE FROM tbm_gudang WHERE id = ?", Id).Error
+
+	return err
+}
+
+//rack
+
+func (r *gudangRepository) CreateRack(Data []Rack) error {
+	err := r.db.Table("rack").Create(&Data).Error
 
 	return err
 }

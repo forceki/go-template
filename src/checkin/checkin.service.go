@@ -1,22 +1,10 @@
 package checkin
 
-import "time"
+import (
+	"time"
 
-type CheckinDetailRes struct {
-	Id  int `json:"id" validate:"required"`
-	Qty int `json:"qty" validate:"required"`
-}
-
-type CheckinRes struct {
-	Id         int                `json:"id"`
-	Code       string             `json:"code"`
-	Total      int                `json:"total" validate:"required"`
-	SupplierId int                `json:"supplier_id" validate:"required"`
-	GudangId   int                `json:"gudang_id" validate:"required"`
-	Tanggal    time.Time          `json:"tanggal"`
-	Keterangan string             `json:"keterangan"`
-	Details    []CheckinDetailRes `json:"details" validate:"required"`
-}
+	"github.com/google/uuid"
+)
 
 type CheckinService interface {
 	Create(Data CheckinRes) error
@@ -35,7 +23,9 @@ func NewCheckinService(checkinRepositroy CheckinRepositroy) *checkinService {
 }
 
 func (s *checkinService) Create(Data CheckinRes) error {
+	id := uuid.NewString()
 	data := Checkin{
+		Id:         id,
 		Code:       Data.Code,
 		Total:      Data.Total,
 		SupplierId: Data.SupplierId,

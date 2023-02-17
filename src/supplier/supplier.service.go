@@ -1,5 +1,7 @@
 package supplier
 
+import "github.com/google/uuid"
+
 type SupplierRequest struct {
 	Nama   string `json:"nama" validate:"required"`
 	Email  string `json:"email" validate:"required"`
@@ -34,7 +36,9 @@ func (s *supplierService) FindAll() (*[]Supplier, error) {
 }
 
 func (s *supplierService) Create(Data SupplierRequest) error {
+	id := uuid.NewString()
 	data := Supplier{
+		ID:     id,
 		Nama:   Data.Nama,
 		Email:  Data.Email,
 		Phone:  Data.Phone,

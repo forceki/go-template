@@ -1,45 +1,8 @@
 package checkin
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
-
-type CheckinDetail struct {
-	Id         int `json:"id" gorm:"column:id; PRIMARY_KEY"`
-	CheckinsId int `json:"checkins_id"`
-	ItemId     int `json:"item_id"`
-	Qty        int `json:"qty"`
-}
-
-type Checkin struct {
-	Id         int       `json:"id" gorm:"column:id; PRIMARY_KEY"`
-	Code       string    `json:"code"`
-	Total      int       `json:"total"`
-	SupplierId int       `json:"supplier_id"`
-	GudangId   int       `json:"gudang_id"`
-	Tanggal    time.Time `json:"taggal"`
-	Keterangan string    `json:"keterangan"`
-}
-type CheckinResponse struct {
-	Id         int       `json:"id,omitempty" gorm:"column:id; PRIMARY_KEY"`
-	Code       string    `json:"code,omitempty"`
-	Total      int       `json:"total,omitempty"`
-	Supplier   string    `json:"supplier,omitempty"`
-	SupplierId int       `json:"supplier_id,omitempty"`
-	GudangId   int       `json:"gudang_id,omitempty"`
-	Gudang     string    `json:"gudang,omitempty"`
-	Tanggal    time.Time `json:"tanggal"`
-	Keterangan string    `json:"keterangan"`
-}
-
-type CheckinDetailResponse struct {
-	Id     int    `json:"checkins_id" gorm:"column:id; PRIMARY_KEY"`
-	ItemId int    `json:"id"`
-	Nama   string `json:"nama"`
-	Qty    int    `json:"qty"`
-}
 
 type CheckinRepositroy interface {
 	Create(Data Checkin, Detail []CheckinDetail) error
@@ -68,6 +31,7 @@ func (r *checkinRepositroy) Create(Data Checkin, Detail []CheckinDetail) error {
 
 	if err != nil {
 		tx.Rollback()
+		return err
 	}
 
 	var detail []CheckinDetail

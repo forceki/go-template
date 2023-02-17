@@ -18,4 +18,6 @@ func GudangRouter(db *gorm.DB, router fiber.Router) {
 	app.Post("/", controller.Create)
 	app.Put("/", controller.Update)
 	app.Delete("/", controller.Delete)
+
+	app.Post("/rack", controller.CreateRack)
 }
