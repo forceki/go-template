@@ -6,7 +6,7 @@ import (
 
 type CheckinRepositroy interface {
 	Create(Data Checkin, Detail []CheckinDetail) error
-	FindAll() ([]CheckinResponse, error)
+	FindAll(Status int) ([]CheckinResponse, error)
 	FindOne(Id string) (CheckinResponse, error)
 	FindOneDetail(Id string) ([]CheckinDetailResponse, error)
 	Delete(Id string) error
@@ -57,15 +57,29 @@ func (r *checkinRepositroy) Create(Data Checkin, Detail []CheckinDetail) error {
 	return err
 }
 
-func (r *checkinRepositroy) FindAll() ([]CheckinResponse, error) {
+func (r *checkinRepositroy) FindAll(Status int) ([]CheckinResponse, error) {
 	var data []CheckinResponse
 
-	err := r.db.Table("checkins").Select("checkins.id, checkins.code, checkins.total, tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, checkins.tanggal, checkins.keterangan").
-		Joins("left join tbm_gudang on tbm_gudang.id = checkins.gudang_id").
-		Joins("left join tbm_suppliers on tbm_suppliers.id = checkins.supplier_id").Order("checkins.id DESC").
-		Find(&data).Error
+	if Status == 2 {
+		err := r.db.Table("checkins").Select("checkins.id, checkins.code, checkins.total, tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, rack.rack_id, rack.rack_name, checkins.tanggal, checkins.keterangan").
+			Joins("left join tbm_gudang on tbm_gudang.id = checkins.gudang_id").
+			Joins("left join tbm_suppliers on tbm_suppliers.id = checkins.supplier_id").
+			Joins("left join rack on rack.rack_id = checkins.rack_id").
+			Where("checkins.status = ?", Status).
+			Order("checkins.created_at DESC").
+			Find(&data).Error
+		return data, err
+	} else {
+		err := r.db.Table("checkins").Select("checkins.id, checkins.code, checkins.total, tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, rack.rack_id, rack.rack_name, checkins.tanggal, checkins.keterangan").
+			Joins("left join tbm_gudang on tbm_gudang.id = checkins.gudang_id").
+			Joins("left join tbm_suppliers on tbm_suppliers.id = checkins.supplier_id").
+			Joins("left join rack on rack.rack_id = checkins.rack_id").
+			Where("checkins.status != ?", 2).
+			Order("checkins.created_at DESC").
+			Find(&data).Error
+		return data, err
+	}
 
-	return data, err
 }
 
 func (r *checkinRepositroy) Delete(Id string) error {
@@ -77,9 +91,11 @@ func (r *checkinRepositroy) Delete(Id string) error {
 func (r *checkinRepositroy) FindOne(Id string) (CheckinResponse, error) {
 	var data CheckinResponse
 
-	err := r.db.Table("checkins").Select("checkins.id, checkins.code, checkins.total, checkins.gudang_id, checkins.supplier_id, tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, checkins.tanggal, checkins.keterangan").
+	err := r.db.Table("checkins").Select("checkins.id, checkins.code, checkins.total, checkins.gudang_id, checkins.supplier_id, tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, rack.rack_id, rack.rack_name, checkins.tanggal, checkins.keterangan").
 		Joins("left join tbm_gudang on tbm_gudang.id = checkins.gudang_id").
-		Joins("left join tbm_suppliers on tbm_suppliers.id = checkins.supplier_id").Where("checkins.id = ?", Id).
+		Joins("left join tbm_suppliers on tbm_suppliers.id = checkins.supplier_id").
+		Joins("left join rack on rack.rack_id = checkins.rack_id").
+		Where("checkins.id = ?", Id).
 		Find(&data).Error
 
 	return data, err

@@ -17,6 +17,8 @@ type Checkin struct {
 	GudangId   string    `json:"gudang_id"`
 	Tanggal    time.Time `json:"taggal"`
 	Keterangan string    `json:"keterangan"`
+	RackId     string    `json:"rack_id"`
+	Status     int       `json:"status"`
 }
 type CheckinResponse struct {
 	Id         string    `json:"id,omitempty" gorm:"column:id; PRIMARY_KEY"`
@@ -28,6 +30,9 @@ type CheckinResponse struct {
 	Gudang     string    `json:"gudang,omitempty"`
 	Tanggal    time.Time `json:"tanggal"`
 	Keterangan string    `json:"keterangan"`
+	RackId     string    `json:"rack_id"`
+	RackName   string    `json:"rack_name"`
+	Status     int       `json:"status"`
 }
 
 type CheckinDetailResponse struct {
@@ -50,5 +55,7 @@ type CheckinRes struct {
 	GudangId   string             `json:"gudang_id" validate:"required"`
 	Tanggal    time.Time          `json:"tanggal"`
 	Keterangan string             `json:"keterangan"`
+	RackId     string             `json:"rack_id"`
+	Status     int                `json:"status"`
 	Details    []CheckinDetailRes `json:"details" validate:"required"`
 }

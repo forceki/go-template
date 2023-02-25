@@ -1,6 +1,8 @@
 package checkin
 
 import (
+	"strconv"
+
 	"github.com/forceki/invent-be/handler"
 	"github.com/gofiber/fiber/v2"
 )
@@ -36,7 +38,9 @@ func (c *checkinController) Create(f *fiber.Ctx) error {
 }
 
 func (c *checkinController) FindAll(f *fiber.Ctx) error {
-	data, err := c.checkinService.FindAll()
+	Status := f.Query("status")
+	intVar, _ := strconv.Atoi(Status)
+	data, err := c.checkinService.FindAll(intVar)
 
 	if err != nil {
 		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)

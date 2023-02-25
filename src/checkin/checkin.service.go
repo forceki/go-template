@@ -8,7 +8,7 @@ import (
 
 type CheckinService interface {
 	Create(Data CheckinRes) error
-	FindAll() (*[]CheckinResponse, error)
+	FindAll(Status int) (*[]CheckinResponse, error)
 	Delete(Id string) error
 	FindOne(Id string) (interface{}, error)
 	Update(Id string, Data CheckinRes) error
@@ -31,6 +31,7 @@ func (s *checkinService) Create(Data CheckinRes) error {
 		SupplierId: Data.SupplierId,
 		GudangId:   Data.GudangId,
 		Keterangan: Data.Keterangan,
+		RackId:     Data.RackId,
 		Tanggal:    time.Now(),
 	}
 
@@ -50,8 +51,8 @@ func (s *checkinService) Create(Data CheckinRes) error {
 	return err
 }
 
-func (s *checkinService) FindAll() (*[]CheckinResponse, error) {
-	data, err := s.checkinRepositroy.FindAll()
+func (s *checkinService) FindAll(Status int) (*[]CheckinResponse, error) {
+	data, err := s.checkinRepositroy.FindAll(Status)
 	if err != nil {
 		return nil, err
 	}
@@ -94,6 +95,7 @@ func (s *checkinService) FindOne(Id string) (interface{}, error) {
 	res.SupplierId = data.SupplierId
 	res.Tanggal = data.Tanggal
 	res.Keterangan = data.Keterangan
+	res.RackId = data.RackId
 	res.Total = data.Total
 	res.Items = item
 
@@ -108,6 +110,7 @@ func (s *checkinService) Update(Id string, Data CheckinRes) error {
 		SupplierId: Data.SupplierId,
 		GudangId:   Data.GudangId,
 		Keterangan: Data.Keterangan,
+		RackId:     Data.RackId,
 		Tanggal:    Data.Tanggal,
 	}
 

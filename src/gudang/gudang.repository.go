@@ -9,6 +9,7 @@ type Gudang struct {
 	Nama     string `json:"nama"`
 	Alamat   string `json:"alamat"`
 	Status   bool   `json:"status" gorm:"type:boolean:column:status"`
+	Rack     string `json:"rack"`
 }
 
 type Rack struct {
@@ -23,6 +24,8 @@ type GudangRepository interface {
 	Update(Id string, Data Gudang) error
 	Delete(Id string) error
 	CreateRack(Data []Rack) error
+	DeleteRack(Id string) error
+	GetRack(GudangId string) ([]Rack, error)
 }
 
 type gudangRepository struct {
@@ -36,7 +39,12 @@ func NewGudangRepository(db *gorm.DB) *gudangRepository {
 func (r *gudangRepository) FindAll() ([]Gudang, error) {
 	var gudang []Gudang
 
-	err := r.db.Table("tbm_gudang").Select("id", "nama", "alamat", "status").Order("id DESC").Find(&gudang).Error
+	err := r.db.Raw(`select tg.*, (
+		select jsonb_agg(ra)
+		from (
+			select r.rack_id, r.rack_name from rack as r where r.gudang_id = tg.id
+		) as ra
+	   )as rack from tbm_gudang as tg`).Scan(&gudang).Error
 
 	return gudang, err
 }
@@ -68,4 +76,18 @@ func (r *gudangRepository) CreateRack(Data []Rack) error {
 	err := r.db.Table("rack").Create(&Data).Error
 
 	return err
+}
+
+func (r *gudangRepository) DeleteRack(Id string) error {
+	err := r.db.Exec("DELETE FROM rack WHERE rack_id = ?", Id).Error
+
+	return err
+}
+
+func (r *gudangRepository) GetRack(GudangId string) ([]Rack, error) {
+
+	var rack []Rack
+	err := r.db.Table("rack").Where("gudang_id = ?", GudangId).Find(&rack).Error
+
+	return rack, err
 }

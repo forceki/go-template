@@ -11,8 +11,8 @@ type gudangRequest struct {
 type RackRequest struct {
 	GudangId string `json:"gudang_id"`
 	Details  []struct {
-		RackName string `json:"rack_name`
-	}
+		RackName string `json:"rack_name"`
+	} `json:"details"`
 }
 
 type GudangService interface {
@@ -21,6 +21,8 @@ type GudangService interface {
 	Update(Id string, Data gudangRequest) error
 	Delete(Id string) error
 	CreateRack(Data RackRequest) error
+	DeleteRack(Id string) error
+	GetRack(GudangId string) ([]Rack, error)
 }
 
 type gudangService struct {
@@ -89,4 +91,20 @@ func (s *gudangService) CreateRack(Data RackRequest) error {
 	err := s.gudangRepository.CreateRack(data)
 
 	return err
+}
+
+func (s *gudangService) DeleteRack(Id string) error {
+	err := s.gudangRepository.DeleteRack(Id)
+
+	return err
+}
+
+func (s *gudangService) GetRack(GudangId string) ([]Rack, error) {
+	data, err := s.gudangRepository.GetRack(GudangId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }

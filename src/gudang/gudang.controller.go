@@ -1,6 +1,8 @@
 package gudang
 
 import (
+	"fmt"
+
 	"github.com/forceki/invent-be/handler"
 	"github.com/gofiber/fiber/v2"
 )
@@ -18,7 +20,6 @@ func (c *gudangController) FindAll(f *fiber.Ctx) error {
 
 	if err != nil {
 		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)
-
 	}
 
 	return handler.ResponseHttp(f, 200, 1, "success", data)
@@ -113,6 +114,7 @@ func (c *gudangController) CreateRack(f *fiber.Ctx) error {
 	var body RackRequest
 	err := f.BodyParser(&body)
 
+	fmt.Println("testing")
 	if err != nil {
 		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)
 	}
@@ -124,4 +126,48 @@ func (c *gudangController) CreateRack(f *fiber.Ctx) error {
 	}
 
 	return handler.ResponseHttp(f, 201, 1, "create", nil)
+}
+
+func (c *gudangController) DeleteRack(f *fiber.Ctx) error {
+	Id := f.Query("id")
+
+	if Id == "" {
+		return handler.ResponseHttp(f, 400, 0, "check your id", nil)
+	}
+
+	err := c.gudangService.DeleteRack(Id)
+	if err != nil {
+		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)
+	}
+
+	return handler.ResponseHttp(f, 201, 1, "deleted", nil)
+
+}
+
+func (c *gudangController) MasterRack(f *fiber.Ctx) error {
+	gudangId := f.Query("gudang_id")
+
+	data, err := c.gudangService.GetRack(gudangId)
+
+	if err != nil {
+		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)
+	}
+
+	type res struct {
+		Id    string `json:"id"`
+		Label string `json:"label"`
+	}
+
+	var supp []res
+	for _, item := range data {
+
+		key := res{
+			Id:    item.RackId,
+			Label: item.RackName,
+		}
+		supp = append(supp, key)
+
+	}
+
+	return handler.ResponseHttp(f, 200, 1, "success", supp)
 }
