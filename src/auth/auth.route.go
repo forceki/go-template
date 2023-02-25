@@ -15,4 +15,6 @@ func AuthRouter(db *gorm.DB, router fiber.Router) {
 
 	app.Post("/register", middleware.Auth, controller.Create)
 	app.Post("/login", controller.Login)
+	app.Get("/me", middleware.Auth, controller.CheckToken)
+
 }

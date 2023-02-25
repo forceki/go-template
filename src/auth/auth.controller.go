@@ -63,3 +63,10 @@ func (c *authController) Login(f *fiber.Ctx) error {
 
 	return handler.ResponseHttp(f, 201, 1, "Logged", data)
 }
+
+func (c *authController) CheckToken(f *fiber.Ctx) error {
+
+	user := f.Locals("user")
+
+	return handler.ResponseHttp(f, 201, 1, "Logged", user)
+}
