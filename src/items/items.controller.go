@@ -110,5 +110,15 @@ func (c *itemsController) Delete(f *fiber.Ctx) error {
 	}
 
 	return handler.ResponseHttp(f, 201, 1, "deleted", nil)
+}
 
+func (c *itemsController) GetItemDetail(f *fiber.Ctx) error {
+	Id := f.Query("id")
+	data, err := c.itemsService.ItemsDetail(Id)
+
+	if err != nil {
+		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)
+	}
+
+	return handler.ResponseHttp(f, 200, 1, "success", data)
 }

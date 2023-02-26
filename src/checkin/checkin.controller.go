@@ -94,3 +94,16 @@ func (c *checkinController) Update(f *fiber.Ctx) error {
 
 	return handler.ResponseHttp(f, 201, 1, "updated", nil)
 }
+
+func (c *checkinController) UpdateStatus(f *fiber.Ctx) error {
+	Id := f.Query("id")
+	Status := f.Query("status")
+
+	err := c.checkinService.UpdateStatus(Id, Status)
+
+	if err != nil {
+		return handler.ResponseHttp(f, 501, 0, err.Error(), nil)
+	}
+
+	return handler.ResponseHttp(f, 201, 1, "updated", nil)
+}

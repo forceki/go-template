@@ -18,4 +18,5 @@ func ItemsRouter(db *gorm.DB, router fiber.Router) {
 	app.Post("/", controller.Create)
 	app.Put("/", controller.Update)
 	app.Delete("/", controller.Delete)
+	app.Get("/detail", controller.GetItemDetail)
 }

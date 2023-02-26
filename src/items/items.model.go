@@ -32,3 +32,9 @@ type ItemsResponse struct {
 	Satuan       string `json:"satuan"`
 	Detail       string `json:"detail"`
 }
+
+type ItemsDetailRes struct {
+	Qty    int    `json:"qty"`
+	Gudang string `json:"gudang"`
+	Rack   string `json:"rack"`
+}

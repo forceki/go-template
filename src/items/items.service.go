@@ -1,12 +1,15 @@
 package items
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type ItemsService interface {
 	FindAll(Id string) (*[]ItemsResponse, error)
 	Create(Data ItemsRequest) error
 	Update(Id string, Data ItemsRequest) error
 	Delete(Id string) error
+	ItemsDetail(Id string) (interface{}, error)
 }
 
 type itemsService struct {
@@ -62,4 +65,30 @@ func (s *itemsService) Delete(Id string) error {
 	err := s.itemsRepository.Delete(Id)
 
 	return err
+}
+
+func (s *itemsService) ItemsDetail(Id string) (interface{}, error) {
+
+	res, err := s.itemsRepository.FindAll(Id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	detail, err := s.itemsRepository.ItemsDetail(Id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	type body struct {
+		Item   []ItemsResponse  `json:"item"`
+		Detail []ItemsDetailRes `json:"detail"`
+	}
+
+	data := body{
+		Item:   res,
+		Detail: detail,
+	}
+	return data, nil
 }

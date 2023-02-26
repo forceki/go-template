@@ -1,6 +1,8 @@
 package checkin
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -11,6 +13,7 @@ type CheckinRepositroy interface {
 	FindOneDetail(Id string) ([]CheckinDetailResponse, error)
 	Delete(Id string) error
 	Update(Id string, Data Checkin, Detail []CheckinDetail) error
+	UpdateStatus(Id string, Status string) error
 }
 
 type checkinRepositroy struct {
@@ -70,7 +73,7 @@ func (r *checkinRepositroy) FindAll(Status int) ([]CheckinResponse, error) {
 			Find(&data).Error
 		return data, err
 	} else {
-		err := r.db.Table("checkins").Select("checkins.id, checkins.code, checkins.total, tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, rack.rack_id, rack.rack_name, checkins.tanggal, checkins.keterangan").
+		err := r.db.Table("checkins").Select("checkins.*, tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, rack.rack_id, rack.rack_name").
 			Joins("left join tbm_gudang on tbm_gudang.id = checkins.gudang_id").
 			Joins("left join tbm_suppliers on tbm_suppliers.id = checkins.supplier_id").
 			Joins("left join rack on rack.rack_id = checkins.rack_id").
@@ -91,7 +94,7 @@ func (r *checkinRepositroy) Delete(Id string) error {
 func (r *checkinRepositroy) FindOne(Id string) (CheckinResponse, error) {
 	var data CheckinResponse
 
-	err := r.db.Table("checkins").Select("checkins.id, checkins.code, checkins.total, checkins.gudang_id, checkins.supplier_id, tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, rack.rack_id, rack.rack_name, checkins.tanggal, checkins.keterangan").
+	err := r.db.Table("checkins").Select("checkins.* , tbm_suppliers.nama as supplier, tbm_gudang.nama as gudang, rack.rack_id, rack.rack_name").
 		Joins("left join tbm_gudang on tbm_gudang.id = checkins.gudang_id").
 		Joins("left join tbm_suppliers on tbm_suppliers.id = checkins.supplier_id").
 		Joins("left join rack on rack.rack_id = checkins.rack_id").
@@ -136,4 +139,18 @@ func (r *checkinRepositroy) Update(Id string, Data Checkin, Detail []CheckinDeta
 
 	return err
 
+}
+
+func (r *checkinRepositroy) UpdateStatus(Id string, Status string) error {
+	var err error
+	time := time.Now()
+	if Status == "yes" {
+		err = r.db.Exec("UPDATE checkins SET status = 2, retur_at = ? WHERE id = ?", time, Id).Error
+	}
+
+	if Status == "no" {
+		err = r.db.Table("checkins").Where("id =? ", Id).UpdateColumns("Status = 1").Error
+	}
+
+	return err
 }

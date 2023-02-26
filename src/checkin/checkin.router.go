@@ -18,4 +18,5 @@ func CheckinRouter(db *gorm.DB, router fiber.Router) {
 	app.Delete("/", controller.Delete)
 	app.Get("/one", controller.FindOne)
 	app.Put("/", controller.Update)
+	app.Get("/up-status", controller.UpdateStatus)
 }

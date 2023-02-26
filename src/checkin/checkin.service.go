@@ -12,6 +12,7 @@ type CheckinService interface {
 	Delete(Id string) error
 	FindOne(Id string) (interface{}, error)
 	Update(Id string, Data CheckinRes) error
+	UpdateStatus(Id string, Status string) error
 }
 
 type checkinService struct {
@@ -97,6 +98,7 @@ func (s *checkinService) FindOne(Id string) (interface{}, error) {
 	res.Keterangan = data.Keterangan
 	res.RackId = data.RackId
 	res.Total = data.Total
+	res.Status = data.Status
 	res.Items = item
 
 	return res, nil
@@ -127,6 +129,12 @@ func (s *checkinService) Update(Id string, Data CheckinRes) error {
 	}
 
 	err := s.checkinRepositroy.Update(Id, data, detail)
+
+	return err
+}
+
+func (s *checkinService) UpdateStatus(Id string, Status string) error {
+	err := s.checkinRepositroy.UpdateStatus(Id, Status)
 
 	return err
 }

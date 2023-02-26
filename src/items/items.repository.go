@@ -9,6 +9,7 @@ type ItemsRepository interface {
 	Create(Data Items) error
 	Update(Id string, Data Items) error
 	Delete(Id string) error
+	ItemsDetail(Id string) ([]ItemsDetailRes, error)
 }
 
 type itemsRepository struct {
@@ -50,4 +51,21 @@ func (r *itemsRepository) Delete(Id string) error {
 	err := r.db.Exec("DELETE FROM tbm_items WHERE id = ?", Id).Error
 
 	return err
+}
+
+func (r *itemsRepository) ItemsDetail(Id string) ([]ItemsDetailRes, error) {
+	var data []ItemsDetailRes
+	err := r.db.Raw(`
+	select sum(cd.qty) as qty, tg.nama as gudang, string_agg(distinct r.rack_name, ' ,') as rack from checkins as c
+	left join checkins_detail as cd 
+	on c.id = cd.checkins_id 
+	left join tbm_gudang as tg 
+	on tg.id = c.gudang_id 
+	left join rack as r 
+	on r.rack_id = c.rack_id 
+	where c.status = 1 and cd.item_id = ?
+	group by tg.nama
+		`, Id).Scan(&data).Error
+
+	return data, err
 }
